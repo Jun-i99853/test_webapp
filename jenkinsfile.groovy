@@ -27,14 +27,6 @@ node {
 	    catch (MissingPropertyException e) {
 	        println "  BUILD DEPLOY = true"
 	    }
-	
-	    try {
-	        println "  SWITCH FLOW = $USE_SWITCH"
-	        useBuild = "$USE_SWITCH" == "true"
-	    }
-	    catch (MissingPropertyException e) {
-	        println "  SWITCH FLOW = true"
-	    }
     }
     stage('ParameterCheck') {
         println "  JAVA_VERSION = $JAVA_VERSION"
@@ -59,10 +51,18 @@ node {
 	    }
     }
     stage('Build') {
+		if (useBuild) {
+			println "Build Started"
+			bat "mvn package -DskipTests"
+			println "Build End"
+		} else {
+			println "Build Skip"
+		}
     }
     stage('Test') {
     	if (useTest) {
 	        println "Test Started"
+			bat "mvn test"
 	        println "Test End"
 	    } else {
 	        println "Test Skip"
